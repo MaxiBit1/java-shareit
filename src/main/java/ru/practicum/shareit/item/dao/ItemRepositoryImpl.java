@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.model.NoUserExist;
-import ru.practicum.shareit.item.ItemMapping;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.validation.Validation;
@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemRepositoryImpl implements ItemRepository {
 
-    private final ItemMapping itemMapping;
+    private final ItemMapper itemMapper;
     private final UserRepository userRepository;
 
     private final Map<Long, Item> storageItem = new HashMap<>();
 
     @Autowired
-    public ItemRepositoryImpl(ItemMapping itemMapping, UserRepository userRepository) {
-        this.itemMapping = itemMapping;
+    public ItemRepositoryImpl(ItemMapper itemMapper, UserRepository userRepository) {
+        this.itemMapper = itemMapper;
         this.userRepository = userRepository;
     }
 
@@ -45,7 +45,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         item.setUserId(userId);
         storageItem.put(item.getId(), item);
         log.info("Вещь создана");
-        return itemMapping.toItemDto(item);
+        return itemMapper.toItemDto(item);
     }
 
     @Override
@@ -64,13 +64,13 @@ public class ItemRepositoryImpl implements ItemRepository {
             oldItem.setAvailable(item.getAvailable());
         }
         log.info("Вещи обновлена");
-        return itemMapping.toItemDto(oldItem);
+        return itemMapper.toItemDto(oldItem);
     }
 
     @Override
     public ItemDto getItem(long itemId) {
         log.info("Вещь получена");
-        return itemMapping.toItemDto(storageItem.get(itemId));
+        return itemMapper.toItemDto(storageItem.get(itemId));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         return storageItem.values()
                 .stream()
                 .filter(item -> item.getUserId() == userId)
-                .map(itemMapping::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class ItemRepositoryImpl implements ItemRepository {
                 .stream()
                 .filter(Item::getAvailable)
                 .filter(item -> this.searchItem(text, item.getName(), item.getDescription()))
-                .map(itemMapping::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 

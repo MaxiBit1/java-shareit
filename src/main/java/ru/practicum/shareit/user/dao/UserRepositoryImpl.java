@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.ValidationException;
-import ru.practicum.shareit.user.UserMapping;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -22,12 +22,12 @@ import java.util.stream.Collectors;
 public class UserRepositoryImpl implements UserRepository {
 
     private final Map<Long, User> storageUser = new HashMap<>();
-    private final UserMapping userMapping;
+    private final UserMapper userMapper;
     private long oldSize = 0;
 
     @Autowired
-    public UserRepositoryImpl(UserMapping userMapping) {
-        this.userMapping = userMapping;
+    public UserRepositoryImpl(UserMapper userMapper) {
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UserRepositoryImpl implements UserRepository {
         storageUser.put(user.getId(), user);
         oldSize = storageUser.size();
         log.info("Пользователь создан");
-        return userMapping.getUserDto(user);
+        return userMapper.getUserDto(user);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
             oldUser.setEmail(user.getEmail());
         }
         log.info("Пользователь обновлен");
-        return userMapping.getUserDto(oldUser);
+        return userMapper.getUserDto(oldUser);
     }
 
     @Override
@@ -71,13 +71,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<UserDto> getListUsers() {
         log.info("Список пользователь");
-        return storageUser.values().stream().map(userMapping::getUserDto).collect(Collectors.toList());
+        return storageUser.values().stream().map(userMapper::getUserDto).collect(Collectors.toList());
     }
 
     @Override
     public UserDto getUser(long userId) {
         log.info("Получение пользователя по id");
-        return userMapping.getUserDto(storageUser.get(userId));
+        return userMapper.getUserDto(storageUser.get(userId));
     }
 
     @Override
