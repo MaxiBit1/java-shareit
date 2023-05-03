@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-   private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-   @Autowired
+    @Autowired
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -37,10 +37,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(long userId, User user) {
         User oldUser = userRepository.findById(userId).get();
-        if(user.getName() != null) {
+        if (user.getName() != null) {
             oldUser.setName(user.getName());
         }
-        if(user.getEmail() != null) {
+        if (user.getEmail() != null) {
             if (!user.getEmail().equals(oldUser.getEmail()) && checkEmail(user.getEmail())) {
                 throw new EmailExist();
             }
@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Метод для проверки mail
+     *
      * @param email почта
      * @return результат проверки
      */

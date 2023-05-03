@@ -86,7 +86,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NoUserExist();
         }
         Item item = itemOptional.get();
-        if(userId == item.getUser().getId()) {
+        if (userId == item.getUser().getId()) {
             return getItemWithBooking(item);
         }
         return ItemMapper.toItemDtoWithDate(item, null, null, getComments(itemId));
@@ -124,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
                 .filter(booking -> booking.getBooker().getId() == userId)
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .findFirst();
-        if(bookingOptional.isEmpty()) {
+        if (bookingOptional.isEmpty()) {
             throw new ValidationException();
         }
         comment.setCreated(LocalDateTime.now());

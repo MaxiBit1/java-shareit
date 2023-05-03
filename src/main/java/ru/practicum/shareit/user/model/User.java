@@ -25,7 +25,7 @@ public class User {
     private String name;
     @NotEmpty(message = "Email не может быть пустым")
     @Email(message = "Введите правильный email")
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
 
 }

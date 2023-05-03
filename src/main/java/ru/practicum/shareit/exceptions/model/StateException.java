@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class StateException extends RuntimeException{
+public class StateException extends RuntimeException {
     private String text;
 }
