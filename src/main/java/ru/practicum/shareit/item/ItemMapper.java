@@ -1,9 +1,15 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.mapper.BookerMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithDate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
+
+import java.util.List;
 
 /**
  * Класс создания объекта DTO
@@ -17,7 +23,7 @@ public class ItemMapper {
      * @param item - вещь
      * @return - itemDto
      */
-    public ItemDto toItemDto(Item item) {
+    public static ItemDto toItemDto(Item item) {
         return new ItemDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
@@ -26,7 +32,25 @@ public class ItemMapper {
     }
 
     /**
-     * Метод преобразованият из объекта DTO в объект item
+     * Метод создания объекта DTO с бронированием и комментариями
+     *
+     * @param item - вещь
+     * @return - itemDto
+     */
+    public static ItemDtoWithDate toItemDtoWithDate(Item item, Booking bookingNext, Booking bookingLast, List<CommentDto> comments) {
+        return ItemDtoWithDate.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .nextBooking(bookingNext != null ? BookerMapper.toBookingItem(bookingNext) : null)
+                .lastBooking(bookingLast != null ? BookerMapper.toBookingItem(bookingLast) : null)
+                .comments(comments)
+                .build();
+    }
+
+    /**
+     * Метод преобразования из объекта DTO в объект item
      *
      * @param itemDto - объект DTO
      * @param user    - юзер
@@ -38,7 +62,7 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.isAvailable())
-                .userId(user.getId())
+                .user(user)
                 .build();
     }
 

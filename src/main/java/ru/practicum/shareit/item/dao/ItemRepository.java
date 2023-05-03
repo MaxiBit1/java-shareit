@@ -1,54 +1,35 @@
 package ru.practicum.shareit.item.dao;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 /**
- * Интерфес для работы с бд вещей
+ * Интерфейс для работы с бд вещей
  */
-public interface ItemRepository {
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Long> {
     /**
-     * Метод для сохрранения вещи в бд
-     *
-     * @param item   - вещь
-     * @param userId - айди юзера
-     * @return - сохраненная вещь
-     */
-    ItemDto save(Item item, long userId);
-
-    /**
-     * Метод для обновления вещи
-     *
-     * @param userId - айди юзера
-     * @param itemId - айди вещи
-     * @param item   - вещь
-     * @return - обновленная вещь
-     */
-    ItemDto update(long userId, long itemId, Item item);
-
-    /**
-     * Метод для получения вещи
-     *
-     * @param itemId - айди вещи
-     * @return - найдена вещь
-     */
-    ItemDto getItem(long itemId);
-
-    /**
-     * Метод получения списка вещей для определенного пользователя
-     *
-     * @param userId - айди пользователя
+     * Нахождение всех вещей по юзеру
+     * @param user - юзер
      * @return - список вещей
      */
-    List<ItemDto> getItems(long userId);
+    List<Item> findAllByUser(User user);
 
     /**
-     * Метод для поиска вещей по тексту
-     *
+     * нахождение вещи по тексту
      * @param text - текст
-     * @return - список найденных вещей
+     * @return - список вещей
      */
-    List<ItemDto> getSearchItem(String text);
+    @Query("select new ru.practicum.shareit.item.dto.ItemDto(it.id, it.name, it.description, it.available) " +
+            "from Item as it " +
+            "where lower( it.name) like lower(concat('%', ?1,'%') )" +
+            "or lower(it.description) like lower(concat('%', ?1,'%'))" +
+            "and it.available = true ")
+    List<ItemDto> findItemsByText(String text);
 }
