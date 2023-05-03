@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.model.Booking;
 /**
  * Класс-маппер для брони
  */
-public class BookerMapper {
+public class BookingMapper {
 
     public static BookingDto toDto(Booking booking) {
         return BookingDto.builder()

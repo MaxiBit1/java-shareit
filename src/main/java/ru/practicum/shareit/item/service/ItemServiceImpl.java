@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -119,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDto createComment(long itemId, long userId, Comment comment) {
-        Optional<Booking> bookingOptional = bookingRepository.findByItem_idAndStatusBookingIs(itemId, StatusBooking.APPROVED)
+        Optional<Booking> bookingOptional = bookingRepository.findByItemIdAndStatusBookingIs(itemId, StatusBooking.APPROVED)
                 .stream()
                 .filter(booking -> booking.getBooker().getId() == userId)
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
@@ -144,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
     private ItemDtoWithDate getItemWithBooking(Item item) {
         Booking bookingLast = null;
         Booking bookingNext = null;
-        List<Booking> bookings = bookingRepository.findByItem_idAndStatusBookingIs(item.getId(), StatusBooking.APPROVED)
+        List<Booking> bookings = bookingRepository.findByItemIdAndStatusBookingIs(item.getId(), StatusBooking.APPROVED)
                 .stream()
                 .sorted(Comparator.comparing(Booking::getStart))
                 .collect(Collectors.toList());

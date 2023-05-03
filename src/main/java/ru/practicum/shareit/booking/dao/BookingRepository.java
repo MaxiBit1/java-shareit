@@ -12,26 +12,26 @@ import java.util.List;
  * Класс для работы с бд бронирований
  */
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findByBooker_IdAndEndIsBefore(long bookerId, LocalDateTime end, Sort sort);
+    List<Booking> findByBookerIdAndEndIsBefore(long bookerId, LocalDateTime end, Sort sort);
 
-    List<Booking> findByBooker_IdAndStatusBookingIs(long bookerId, StatusBooking statusBooking, Sort sort);
+    List<Booking> findByBookerIdAndStatusBookingIs(long bookerId, StatusBooking statusBooking, Sort sort);
 
-    List<Booking> findByBooker_IdAndStartIsAfter(long bookerId, LocalDateTime start, Sort sort);
+    List<Booking> findByBookerIdAndStartIsAfter(long bookerId, LocalDateTime start, Sort sort);
 
-    List<Booking> findByBooker_IdAndEndIsAfterAndStartIsBefore(long bookerId, LocalDateTime end, LocalDateTime start, Sort sort);
+    List<Booking> findByBookerIdAndEndIsAfterAndStartIsBefore(long bookerId, LocalDateTime end, LocalDateTime start, Sort sort);
 
-    List<Booking> findByBooker_id(long bookerId, Sort sort);
+    List<Booking> findByBookerId(long bookerId, Sort sort);
 
-    List<Booking> findByItem_User_IdAndEndIsBefore(long userId, LocalDateTime end, Sort sort);
+    List<Booking> findByItemUserIdAndEndIsBefore(long userId, LocalDateTime end, Sort sort);
 
-    List<Booking> findByItem_User_IdAndStatusBookingIs(long userId, StatusBooking statusBooking, Sort sort);
+    List<Booking> findByItemUserIdAndStatusBookingIs(long userId, StatusBooking statusBooking, Sort sort);
 
-    List<Booking> findByItem_User_IdAndStartIsAfter(long userId, LocalDateTime start, Sort sort);
+    List<Booking> findByItemUserIdAndStartIsAfter(long userId, LocalDateTime start, Sort sort);
 
-    List<Booking> findByItem_User_IdAndEndIsAfterAndStartIsBefore(long userId, LocalDateTime end, LocalDateTime start, Sort sort);
+    List<Booking> findByItemUserIdAndEndIsAfterAndStartIsBefore(long userId, LocalDateTime end, LocalDateTime start, Sort sort);
 
-    List<Booking> findByItem_User_Id(long userId, Sort sort);
+    List<Booking> findByItemUserId(long userId, Sort sort);
 
-    List<Booking> findByItem_idAndStatusBookingIs(long itemId, StatusBooking statusBooking);
+    List<Booking> findByItemIdAndStatusBookingIs(long itemId, StatusBooking statusBooking);
 
 }

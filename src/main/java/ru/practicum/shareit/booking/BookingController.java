@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingTakedDto;
@@ -39,14 +41,22 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingDto> getBookingByCurrentUser(@RequestParam(value = "state", defaultValue = "ALL")  String state,
-                                                    @RequestHeader("X-Sharer-User-Id") long userId) {
-        return bookingService.getBookingsWithCurrentUser(state, userId);
+    public ResponseEntity<List<BookingDto>> getBookingByCurrentUser(@RequestParam(value = "state", defaultValue = "ALL") String state,
+                                                                    @RequestHeader("X-Sharer-User-Id") long userId) {
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser(state, userId);
+        if (resultList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getBookingByCurrentOwner(@RequestParam(value = "state", defaultValue = "ALL")  String state,
-                                                    @RequestHeader("X-Sharer-User-Id") long userId) {
-        return bookingService.getBookingWithCurrentOwner(state, userId);
+    public ResponseEntity<List<BookingDto>> getBookingByCurrentOwner(@RequestParam(value = "state", defaultValue = "ALL") String state,
+                                                                     @RequestHeader("X-Sharer-User-Id") long userId) {
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner(state, userId);
+        if (resultList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 }

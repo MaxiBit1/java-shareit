@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingTakedDto;
-import ru.practicum.shareit.booking.mapper.BookerMapper;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.model.NoUserExist;
 import ru.practicum.shareit.exceptions.model.ValidationException;
@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
         if (userId == item.getId()) {
             throw new NoUserExist();
         }
-        return BookerMapper.toDto(bookingRepository.save(Booking.builder()
+        return BookingMapper.toDto(bookingRepository.save(Booking.builder()
                 .booker(user)
                 .statusBooking(StatusBooking.WAITING)
                 .start(start)
@@ -82,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatusBooking(StatusBooking.REJECTED);
         }
-        return BookerMapper.toDto(bookingRepository.save(booking));
+        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -95,7 +96,7 @@ public class BookingServiceImpl implements BookingService {
         if ((booking.getItem().getUser().getId() != userId) == (booking.getBooker().getId() != userId)) {
             throw new NoUserExist();
         }
-        return BookerMapper.toDto(booking);
+        return BookingMapper.toDto(booking);
     }
 
     @Override
@@ -104,55 +105,55 @@ public class BookingServiceImpl implements BookingService {
         StateOfBookingCurrentUser state1 = StateOfBookingCurrentUser.valueOf(state);
         switch (state1) {
             case CURRENT:
-                bookingDtos = bookingRepository.findByBooker_IdAndEndIsAfterAndStartIsBefore(userId,
+                bookingDtos = bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(userId,
                                 LocalDateTime.now(),
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case PAST:
-                bookingDtos = bookingRepository.findByBooker_IdAndEndIsBefore(userId,
+                bookingDtos = bookingRepository.findByBookerIdAndEndIsBefore(userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case FUTURE:
-                bookingDtos = bookingRepository.findByBooker_IdAndStartIsAfter(userId,
+                bookingDtos = bookingRepository.findByBookerIdAndStartIsAfter(userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case WAITING:
-                bookingDtos = bookingRepository.findByBooker_IdAndStatusBookingIs(userId,
+                bookingDtos = bookingRepository.findByBookerIdAndStatusBookingIs(userId,
                                 StatusBooking.WAITING,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case REJECTED:
-                bookingDtos = bookingRepository.findByBooker_IdAndStatusBookingIs(userId,
+                bookingDtos = bookingRepository.findByBookerIdAndStatusBookingIs(userId,
                                 StatusBooking.REJECTED,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             default:
-                bookingDtos = bookingRepository.findByBooker_id(userId, Sort.by(Sort.Direction.DESC, "start"))
+                bookingDtos = bookingRepository.findByBookerId(userId, Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
         }
         if (bookingDtos.isEmpty()) {
-            throw new RuntimeException();
+            bookingDtos = new ArrayList<>();
         }
         return bookingDtos;
     }
@@ -163,55 +164,55 @@ public class BookingServiceImpl implements BookingService {
         StateOfBookingCurrentUser state1 = StateOfBookingCurrentUser.valueOf(state);
         switch (state1) {
             case CURRENT:
-                bookingDtos = bookingRepository.findByItem_User_IdAndEndIsAfterAndStartIsBefore(userId,
+                bookingDtos = bookingRepository.findByItemUserIdAndEndIsAfterAndStartIsBefore(userId,
                                 LocalDateTime.now(),
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case PAST:
-                bookingDtos = bookingRepository.findByItem_User_IdAndEndIsBefore(userId,
+                bookingDtos = bookingRepository.findByItemUserIdAndEndIsBefore(userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case FUTURE:
-                bookingDtos = bookingRepository.findByItem_User_IdAndStartIsAfter(userId,
+                bookingDtos = bookingRepository.findByItemUserIdAndStartIsAfter(userId,
                                 LocalDateTime.now(),
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case WAITING:
-                bookingDtos = bookingRepository.findByItem_User_IdAndStatusBookingIs(userId,
+                bookingDtos = bookingRepository.findByItemUserIdAndStatusBookingIs(userId,
                                 StatusBooking.WAITING,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             case REJECTED:
-                bookingDtos = bookingRepository.findByItem_User_IdAndStatusBookingIs(userId,
+                bookingDtos = bookingRepository.findByItemUserIdAndStatusBookingIs(userId,
                                 StatusBooking.REJECTED,
                                 Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
             default:
-                bookingDtos = bookingRepository.findByItem_User_Id(userId, Sort.by(Sort.Direction.DESC, "start"))
+                bookingDtos = bookingRepository.findByItemUserId(userId, Sort.by(Sort.Direction.DESC, "start"))
                         .stream()
-                        .map(BookerMapper::toDto)
+                        .map(BookingMapper::toDto)
                         .collect(Collectors.toList());
                 break;
         }
         if (bookingDtos.isEmpty()) {
-            throw new RuntimeException();
+            bookingDtos = new ArrayList<>();
         }
         return bookingDtos;
     }

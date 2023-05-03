@@ -2,6 +2,7 @@ package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,6 +11,8 @@ import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.ErrorResponse;
 import ru.practicum.shareit.exceptions.model.NoUserExist;
 import ru.practicum.shareit.exceptions.model.ValidationException;
+
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -35,8 +38,11 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleState(final IllegalArgumentException e) {
-        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
+    public ResponseEntity<Map<String, String>> handleState(final IllegalArgumentException e) {
+        return new ResponseEntity<>(
+                Map.of("error", "Unknown state: UNSUPPORTED_STATUS"),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ExceptionHandler

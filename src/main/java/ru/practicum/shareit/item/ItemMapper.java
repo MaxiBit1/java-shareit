@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.mapper.BookerMapper;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -43,8 +43,8 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .nextBooking(bookingNext != null ? BookerMapper.toBookingItem(bookingNext) : null)
-                .lastBooking(bookingLast != null ? BookerMapper.toBookingItem(bookingLast) : null)
+                .nextBooking(bookingNext != null ? BookingMapper.toBookingItem(bookingNext) : null)
+                .lastBooking(bookingLast != null ? BookingMapper.toBookingItem(bookingLast) : null)
                 .comments(comments)
                 .build();
     }
