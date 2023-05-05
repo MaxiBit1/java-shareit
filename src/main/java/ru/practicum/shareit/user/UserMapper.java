@@ -16,7 +16,7 @@ public class UserMapper {
      * @param user - юзер
      * @return - объект DTO
      */
-    public UserDto getUserDto(User user) {
+    public static UserDto getUserDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getName(),

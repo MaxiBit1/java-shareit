@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.service;
 
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithDate;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 /**
- * Инитерфейс сервиса для вещей
+ * Интерфейс сервиса для вещей
  */
 public interface ItemService {
     /**
@@ -34,7 +37,7 @@ public interface ItemService {
      * @param itemId - айди вещи
      * @return - получение вещи
      */
-    ItemDto getItem(long itemId);
+    ItemDtoWithDate getItem(long itemId, long userId);
 
     /**
      * Метод получения списка вещей
@@ -42,7 +45,7 @@ public interface ItemService {
      * @param userId - айди юзера
      * @return - список вещей
      */
-    List<ItemDto> getItems(long userId);
+    List<ItemDtoWithDate> getItems(long userId);
 
     /**
      * Получение определенной вещи
@@ -51,4 +54,13 @@ public interface ItemService {
      * @return - получение вещи
      */
     List<ItemDto> getCurrentItems(String text);
+
+    /**
+     * Создание комментария
+     * @param itemId - вещь
+     * @param userId - юзер
+     * @param comment - комментарий
+     * @return - сохраненный комментарий
+     */
+    CommentDto createComment(long itemId, long userId, Comment comment);
 }
