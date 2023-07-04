@@ -63,4 +63,6 @@ public interface ItemService {
      * @return - сохраненный комментарий
      */
     CommentDto createComment(long itemId, long userId, Comment comment);
+
+    List<ItemDto> getItemsByRequestId(long requestId);
 }

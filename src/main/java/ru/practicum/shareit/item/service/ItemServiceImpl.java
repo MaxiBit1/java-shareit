@@ -140,6 +140,13 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toDto(commentRepository.save(comment));
     }
 
+    @Override
+    public List<ItemDto> getItemsByRequestId(long requestId) {
+        return itemRepository.findAllByItemRequestId(requestId).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
+    }
+
     private ItemDtoWithDate getItemWithBooking(Item item) {
         Booking bookingLast = null;
         Booking bookingNext = null;
