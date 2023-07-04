@@ -12,4 +12,5 @@ public interface ItemRequestService {
     ItemRequestDto save(ItemRequest itemRequest, long idUser, LocalDateTime created);
     List<ItemRequestDto> getRequests(long idUser);
     ItemRequestDto getRequest(long userId, long idRequest);
+    List<ItemRequestDto> getRequestsPageable(long idUser, long from, long size);
 }

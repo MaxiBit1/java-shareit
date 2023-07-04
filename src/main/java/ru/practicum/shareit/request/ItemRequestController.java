@@ -21,25 +21,31 @@ import java.util.List;
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
+
     @PostMapping
     public ItemRequestDto saveItemRequest(@Valid @RequestBody ItemRequest itemRequest,
-                                          @RequestHeader("X-Sharer-User-Id")long idUser) {
+                                          @RequestHeader("X-Sharer-User-Id") long idUser) {
         log.info("Сохранен запрос юзера: " + idUser);
         return itemRequestService.save(itemRequest, idUser, LocalDateTime.now());
     }
 
     @GetMapping
-    public List<ItemRequestDto> getItemRequests(@RequestHeader("X-Sharer-User-Id")long idUser) {
+    public List<ItemRequestDto> getItemRequests(@RequestHeader("X-Sharer-User-Id") long idUser) {
         log.info("Получены запросы юзера: " + idUser);
         return itemRequestService.getRequests(idUser);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getItemRequest(@RequestHeader("X-Sharer-User-Id")long idUser, @PathVariable long requestId) {
+    public ItemRequestDto getItemRequest(@RequestHeader("X-Sharer-User-Id") long idUser, @PathVariable long requestId) {
         log.info("Получен запрос юзера: " + idUser + "с id запроса: " + requestId);
         return itemRequestService.getRequest(idUser, requestId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getItemRequestsPagination(@RequestParam)
+    public List<ItemRequestDto> getItemRequestsPagination(@RequestHeader("X-Sharer-User-Id") long idUser,
+                                                          @RequestParam(value = "from", defaultValue = "0") long from,
+                                                          @RequestParam(value = "size", defaultValue = "2") long size) {
+        log.info("Получена пагинация для запросов from: " + from + "с size: " + size);
+        return itemRequestService.getRequestsPageable(idUser, from, size);
+    }
 }

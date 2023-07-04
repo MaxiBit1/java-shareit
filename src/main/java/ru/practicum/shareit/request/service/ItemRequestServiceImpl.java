@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dao.ItemRepository;
@@ -62,4 +63,20 @@ public class ItemRequestServiceImpl implements ItemRequestService{
         return itemRequestMapper.toDto(itemRequestRepository
                 .findByUserIdAndId(user.get().getId(),request.get().getId()));
     }
+
+    @Override
+    public List<ItemRequestDto> getRequestsPageable(long idUser, long from, long size) {
+        Optional<User> user = userRepository.findById(idUser);
+        if(user.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return itemRequestRepository
+                .findAll(PageRequest.of((int) from, (int) size,Sort.by(Sort.Direction.DESC, "created")))
+                .getContent()
+                .stream()
+                .map(itemRequestMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
 }
