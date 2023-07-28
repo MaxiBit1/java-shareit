@@ -9,6 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
@@ -27,8 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +48,6 @@ class ItemServiceTest {
     private CommentRepository commentRepository;
     @Mock
     private ItemRequestRepository itemRequestRepository;
-
 
     private ItemService itemService;
 
@@ -240,5 +240,26 @@ class ItemServiceTest {
         assertEquals(items.get(0).getName(), resultList.get(0).getName());
         assertEquals(items.get(0).getDescription(), resultList.get(0).getDescription());
         assertEquals(items.get(0).getRequestId().getId(), resultList.get(0).getRequestId());
+    }
+
+    @Test
+    void getNotItem() {
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemService.getItem(100, 1)
+        );
+    }
+
+    @Test
+    void getPaginationWrong() {
+
+        final ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> itemService.getCurrentItems("aaaa", -1,-1)
+        );
     }
 }

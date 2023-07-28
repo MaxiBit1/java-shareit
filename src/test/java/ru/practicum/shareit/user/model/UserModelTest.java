@@ -21,11 +21,11 @@ public class UserModelTest {
     void shouldSerialiseJsonUser() throws Exception {
         UserDto userDto = new UserDto(1L, "aaa", "ffff@mail.com");
         JsonContent<UserDto> jsonContext = jacksonTester.write(userDto);
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.id")
-                .isEqualTo(userDto.getId());
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.name")
+        assertThat(jsonContext).extractingJsonPathNumberValue("$.id")
+                .isEqualTo(1 );
+        assertThat(jsonContext).extractingJsonPathStringValue("$.name")
                 .isEqualTo(userDto.getName());
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.email")
+        assertThat(jsonContext).extractingJsonPathStringValue("$.email")
                 .isEqualTo(userDto.getEmail());
     }
 }

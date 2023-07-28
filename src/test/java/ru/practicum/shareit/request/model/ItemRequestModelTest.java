@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.model;
 
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -14,9 +13,9 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ItemRequestModelTest {
 
+    @Autowired
     private JacksonTester<ItemRequestDto> json;
 
     @Test
@@ -24,14 +23,14 @@ public class ItemRequestModelTest {
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("aaaaa")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2030, 11, 2, 3, 10, 10))
                 .build();
         JsonContent<ItemRequestDto> jsonContext = json.write(itemRequestDto);
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.id")
-                .isEqualTo(itemRequestDto.getId());
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.description")
+        assertThat(jsonContext).extractingJsonPathNumberValue("$.id")
+                .isEqualTo(1);
+        assertThat(jsonContext).extractingJsonPathStringValue("$.description")
                 .isEqualTo(itemRequestDto.getDescription());
-        assertThat(jsonContext).extractingJsonPathArrayValue("$.created")
-                .isEqualTo(itemRequestDto.getCreated());
+        assertThat(jsonContext).extractingJsonPathStringValue("$.created")
+                .isEqualTo(itemRequestDto.getCreated().toString());
     }
 }

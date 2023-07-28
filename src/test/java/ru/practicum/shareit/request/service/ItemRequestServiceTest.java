@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.dao.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -146,5 +148,33 @@ class ItemRequestServiceTest {
         assertEquals(itemRequest.getId(), resultList.get(0).getId());
         assertEquals(itemRequest.getDescription(), resultList.get(0).getDescription());
         assertEquals(itemRequest.getCreated(), resultList.get(0).getCreated());
+    }
+
+    @Test
+    void getNotRequestItemRequest() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(itemRequestRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemRequestService.getRequest(1L, 1000)
+        );
+    }
+
+    @Test
+    void getNotRequestUser() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+
+
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemRequestService.getRequest(1000, 1L)
+        );
     }
 }

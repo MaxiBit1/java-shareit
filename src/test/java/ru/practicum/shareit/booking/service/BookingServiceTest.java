@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingTakedDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -167,5 +169,17 @@ class BookingServiceTest {
         assertEquals(booking.getBooker(), resultList.get(0).getBooker());
         assertEquals(booking.getItem(), resultList.get(0).getItem());
         assertEquals(booking.getStatusBooking(), resultList.get(0).getStatus());
+    }
+
+    @Test
+    void getNoBooking() {
+        Mockito
+                .when(bookingRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> bookingService.getBooking(1000,1)
+        );
     }
 }

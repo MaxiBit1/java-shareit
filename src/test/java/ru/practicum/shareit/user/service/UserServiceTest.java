@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 
@@ -101,6 +103,18 @@ public class UserServiceTest {
         userService.deleteUser(1L);
         Mockito.verify(mockUserRepository, Mockito.times(1))
                 .deleteById(1L);
+    }
+
+    @Test
+    void getNotUser() {
+        Mockito
+                .when(mockUserRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> userService.getUser(100)
+        );
     }
 
 

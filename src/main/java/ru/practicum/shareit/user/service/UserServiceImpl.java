@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
             oldUser.setName(user.getName());
         }
         if (user.getEmail() != null) {
-            if (!user.getEmail().equals(oldUser.getEmail()) || checkEmail(user.getEmail())) {
+            if (!user.getEmail().equals(oldUser.getEmail()) && checkEmail(user.getEmail())) {
                 throw new EmailExist();
             }
             oldUser.setEmail(user.getEmail());
