@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -26,12 +27,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param text - текст
      * @return - список вещей
      */
-    @Query("select new ru.practicum.shareit.item.dto.ItemDto(it.id, it.name, it.description, it.available) " +
+    @Query("select new ru.practicum.shareit.item.dto.ItemDto(it.id, it.name, it.description, it.available, it.requestId.id) " +
             "from Item as it " +
             "where lower( it.name) like lower(concat('%', ?1,'%') )" +
             "or lower(it.description) like lower(concat('%', ?1,'%'))" +
             "and it.available = true ")
     List<ItemDto> findItemsByText(String text);
 
-    List<Item> findAllByItemRequestId(long itemRequestId);
+    List<Item> findAllByRequestId(ItemRequest itemRequestId);
 }

@@ -42,8 +42,10 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingDto>> getBookingByCurrentUser(@RequestParam(value = "state", defaultValue = "ALL") String state,
-                                                                    @RequestHeader("X-Sharer-User-Id") long userId) {
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser(state, userId);
+                                                                    @RequestHeader("X-Sharer-User-Id") long userId,
+                                                                    @RequestParam(value = "from", required = false) Integer from,
+                                                                    @RequestParam(value = "size", required = false) Integer size) {
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser(state, userId, from, size);
         if (resultList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -52,8 +54,10 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<List<BookingDto>> getBookingByCurrentOwner(@RequestParam(value = "state", defaultValue = "ALL") String state,
-                                                                     @RequestHeader("X-Sharer-User-Id") long userId) {
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner(state, userId);
+                                                                     @RequestHeader("X-Sharer-User-Id") long userId,
+                                                                     @RequestParam(value = "from", required = false) Integer from,
+                                                                     @RequestParam(value = "size", required = false) Integer size) {
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner(state, userId, from, size);
         if (resultList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

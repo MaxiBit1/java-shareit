@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.model.EmailExist;
-import ru.practicum.shareit.exceptions.model.NoUserExist;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
             oldUser.setName(user.getName());
         }
         if (user.getEmail() != null) {
-            if (!user.getEmail().equals(oldUser.getEmail()) && checkEmail(user.getEmail())) {
+            if (!user.getEmail().equals(oldUser.getEmail()) || checkEmail(user.getEmail())) {
                 throw new EmailExist();
             }
             oldUser.setEmail(user.getEmail());
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()) {
             return UserMapper.getUserDto(user.get());
         }
-        throw new NoUserExist();
+        throw new NoObjectExist();
     }
 
     /**

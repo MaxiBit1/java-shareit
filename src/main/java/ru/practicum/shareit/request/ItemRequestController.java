@@ -43,8 +43,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getItemRequestsPagination(@RequestHeader("X-Sharer-User-Id") long idUser,
-                                                          @RequestParam(value = "from", defaultValue = "0") long from,
-                                                          @RequestParam(value = "size", defaultValue = "2") long size) {
+                                                          @RequestParam(value = "from", required = false) Integer from,
+                                                          @RequestParam(value = "size", required = false) Integer size) {
         log.info("Получена пагинация для запросов from: " + from + "с size: " + size);
         return itemRequestService.getRequestsPageable(idUser, from, size);
     }

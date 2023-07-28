@@ -17,6 +17,6 @@ import java.util.List;
 public class ItemRequestDto {
     private long id;
     private String description;
-    private LocalDateTime createdDate;
+    private LocalDateTime created;
     private List<ItemDto> items;
 }

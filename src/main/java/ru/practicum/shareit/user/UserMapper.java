@@ -30,7 +30,7 @@ public class UserMapper {
      * @param userDto - DTO юзера
      * @return - объект User
      */
-    public User toNewUser(UserDto userDto) {
+    public static User toNewUser(UserDto userDto) {
         return User.builder()
                 .id(userDto.getId())
                 .name(userDto.getName())

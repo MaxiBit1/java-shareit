@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDate;
+import ru.practicum.shareit.item.dto.ItemDtoWithRequest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -19,7 +20,7 @@ public interface ItemService {
      * @param userId - айди юзера
      * @return - добавленная вещь
      */
-    ItemDto addItem(Item item, long userId);
+    ItemDto addItem(ItemDtoWithRequest item, long userId);
 
     /**
      * Обновление вещи
@@ -45,7 +46,7 @@ public interface ItemService {
      * @param userId - айди юзера
      * @return - список вещей
      */
-    List<ItemDtoWithDate> getItems(long userId);
+    List<ItemDtoWithDate> getItems(long userId, long from, long size);
 
     /**
      * Получение определенной вещи
@@ -53,12 +54,13 @@ public interface ItemService {
      * @param text - текст
      * @return - получение вещи
      */
-    List<ItemDto> getCurrentItems(String text);
+    List<ItemDto> getCurrentItems(String text, long from, long size);
 
     /**
      * Создание комментария
-     * @param itemId - вещь
-     * @param userId - юзер
+     *
+     * @param itemId  - вещь
+     * @param userId  - юзер
      * @param comment - комментарий
      * @return - сохраненный комментарий
      */

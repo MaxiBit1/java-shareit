@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDate;
+import ru.practicum.shareit.item.dto.ItemDtoWithRequest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -28,7 +29,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@Valid @RequestBody Item item,
+    public ItemDto add(@Valid @RequestBody ItemDtoWithRequest item,
                        @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.addItem(item, userId);
     }
@@ -47,13 +48,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoWithDate> getItems(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getItems(userId);
+    public List<ItemDtoWithDate> getItems(@RequestHeader("X-Sharer-User-Id") long userId,
+                                          @RequestParam(value = "from", defaultValue = "0") long from,
+                                          @RequestParam(value = "size", defaultValue = "0") long size) {
+        return itemService.getItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getSechedItem(@RequestParam String text) {
-        return itemService.getCurrentItems(text);
+    public List<ItemDto> getSearchedItem(@RequestParam String text,
+                                         @RequestParam(value = "from", defaultValue = "0") long from,
+                                         @RequestParam(value = "size", defaultValue = "0") long size) {
+        return itemService.getCurrentItems(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

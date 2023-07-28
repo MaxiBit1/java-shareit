@@ -40,7 +40,7 @@ public interface BookingService {
      * @param userId - юзер
      * @return - список бронирований
      */
-    List<BookingDto> getBookingsWithCurrentUser(String state, long userId);
+    List<BookingDto> getBookingsWithCurrentUser(String state, long userId, Integer from, Integer size);
 
     /**
      * Получение списка брони для хозяина вещей
@@ -48,5 +48,5 @@ public interface BookingService {
      * @param userId - юзер
      * @return - список бронирований
      */
-    List<BookingDto> getBookingWithCurrentOwner(String state, long userId);
+    List<BookingDto> getBookingWithCurrentOwner(String state, long userId, Integer from, Integer size);
 }

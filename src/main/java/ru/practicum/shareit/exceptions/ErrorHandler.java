@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.ErrorResponse;
-import ru.practicum.shareit.exceptions.model.NoUserExist;
+import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 
 import java.util.Map;
@@ -32,8 +32,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse notUserException(final NoUserExist e) {
-        return new ErrorResponse("No user found");
+    public ErrorResponse notObjectFoundException(final NoObjectExist e) {
+        return new ErrorResponse("No object found");
     }
 
     @ExceptionHandler
