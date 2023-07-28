@@ -10,7 +10,10 @@ import java.util.List;
 @Service
 public interface ItemRequestService {
     ItemRequestDto save(ItemRequest itemRequest, long idUser, LocalDateTime created);
+
     List<ItemRequestDto> getRequests(long idUser);
+
     ItemRequestDto getRequest(long userId, long idRequest);
+
     List<ItemRequestDto> getRequestsPageable(long idUser, Integer from, Integer size);
 }

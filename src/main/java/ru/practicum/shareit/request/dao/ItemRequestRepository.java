@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
     List<ItemRequest> findAllByUser(User userId, Sort sort);
+
     ItemRequest findByIdAndUser(long id, User user);
 }

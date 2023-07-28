@@ -22,7 +22,7 @@ public class UserModelTest {
         UserDto userDto = new UserDto(1L, "aaa", "ffff@mail.com");
         JsonContent<UserDto> jsonContext = jacksonTester.write(userDto);
         assertThat(jsonContext).extractingJsonPathNumberValue("$.id")
-                .isEqualTo(1 );
+                .isEqualTo(1);
         assertThat(jsonContext).extractingJsonPathStringValue("$.name")
                 .isEqualTo(userDto.getName());
         assertThat(jsonContext).extractingJsonPathStringValue("$.email")

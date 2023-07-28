@@ -61,7 +61,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         if (request.isEmpty()) {
             throw new NoObjectExist();
         }
-        if(checkList(user.get()).isEmpty()) {
+        if (checkList(user.get()).isEmpty()) {
             return itemRequestMapper.toDto(request.get());
         }
         return itemRequestMapper.toDto(itemRequestRepository
