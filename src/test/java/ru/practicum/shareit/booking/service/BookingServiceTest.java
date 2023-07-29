@@ -158,7 +158,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByBookerIdAndStartIsAfter(anyLong(),
                         any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("FUTURE", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("FUTURE", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -173,7 +173,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserIdAndStartIsAfter(anyLong(),
                         any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("FUTURE", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("FUTURE", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -189,7 +189,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(anyLong(),
                         any(LocalDateTime.class), any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("CURRENT", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("CURRENT", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -205,7 +205,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserIdAndEndIsAfterAndStartIsBefore(anyLong(),
                         any(LocalDateTime.class), any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("CURRENT", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("CURRENT", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -222,7 +222,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByBookerIdAndEndIsBefore(anyLong(),
                         any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("PAST", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("PAST", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -239,7 +239,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserIdAndEndIsBefore(anyLong(),
                         any(LocalDateTime.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("PAST", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("PAST", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -247,13 +247,14 @@ class BookingServiceTest {
         assertEquals(booking.getItem(), resultList.get(0).getItem());
         assertEquals(booking.getStatusBooking(), resultList.get(0).getStatus());
     }
+
     @Test
     void getBookingsWithCurrentUserStatusWaiting() {
         Mockito
                 .when(bookingRepository.findByBookerIdAndStatusBookingIs(anyLong(),
                         any(StatusBooking.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("WAITING", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("WAITING", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -268,7 +269,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserIdAndStatusBookingIs(anyLong(),
                         any(StatusBooking.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("WAITING", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("WAITING", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -284,7 +285,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByBookerIdAndStatusBookingIs(anyLong(),
                         any(StatusBooking.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("REJECTED", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("REJECTED", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -300,7 +301,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserIdAndStatusBookingIs(anyLong(),
                         any(StatusBooking.class), any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("REJECTED", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("REJECTED", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -315,7 +316,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByBookerId(anyLong(),
                         any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("ALL", 2L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingsWithCurrentUser("ALL", 2L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -328,9 +329,9 @@ class BookingServiceTest {
     void getBookingWithCurrentOwnerStatusAll() {
         Mockito
                 .when(bookingRepository.findByItemUserId(anyLong(),
-                         any(Sort.class)))
+                        any(Sort.class)))
                 .thenReturn(List.of(booking));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, null, null);
         assertEquals(booking.getId(), resultList.get(0).getId());
         assertEquals(booking.getStart(), resultList.get(0).getStart());
         assertEquals(booking.getEnd(), resultList.get(0).getEnd());
@@ -347,7 +348,7 @@ class BookingServiceTest {
 
         final NoObjectExist exception = assertThrows(
                 NoObjectExist.class,
-                () -> bookingService.getBooking(1000,1)
+                () -> bookingService.getBooking(1000, 1)
         );
     }
 
@@ -356,7 +357,7 @@ class BookingServiceTest {
         booking.setStart(LocalDateTime.now().minusDays(1L));
         final IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> bookingService.getBookingsWithCurrentUser("aaaaa", 2L, 1,1)
+                () -> bookingService.getBookingsWithCurrentUser("aaaaa", 2L, 1, 1)
         );
     }
 
@@ -366,7 +367,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserId(anyLong(),
                         any(Sort.class)))
                 .thenReturn(new ArrayList<>());
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, null,null);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, null, null);
         assertEquals(new ArrayList<>(), resultList);
     }
 
@@ -374,7 +375,7 @@ class BookingServiceTest {
     void getBookingWithCurrentOwnerStatusWithWrongSize() {
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> bookingService.getBookingsWithCurrentUser("ALL", 2L, -1,-1)
+                () -> bookingService.getBookingsWithCurrentUser("ALL", 2L, -1, -1)
         );
     }
 
@@ -384,7 +385,7 @@ class BookingServiceTest {
                 .when(bookingRepository.findByItemUserId(anyLong(),
                         any(Sort.class)))
                 .thenReturn(List.of(booking, booking1));
-        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, 1,1);
+        List<BookingDto> resultList = bookingService.getBookingWithCurrentOwner("ALL", 1L, 1, 1);
         assertEquals(booking1.getId(), resultList.get(0).getId());
         assertEquals(booking1.getStart(), resultList.get(0).getStart());
         assertEquals(booking1.getEnd(), resultList.get(0).getEnd());
