@@ -262,4 +262,221 @@ class ItemServiceTest {
                 () -> itemService.getCurrentItems("aaaa", -1,-1)
         );
     }
+
+    @Test
+    void createNotUser() {
+        ItemDtoWithRequest itemDtoWithRequest
+                = new ItemDtoWithRequest(1L, "iiii", "ooooooooasdasfa", true, null);
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenThrow(new RuntimeException());
+        final RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> itemService.addItem(itemDtoWithRequest, 100L)
+        );
+    }
+
+    @Test
+    void createNotItemRequest() {
+        ItemDtoWithRequest itemDtoWithRequest
+                = new ItemDtoWithRequest(1L, "iiii", "ooooooooasdasfa", true, 100L);
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(itemRequestRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemService.addItem(itemDtoWithRequest, 1)
+        );
+    }
+
+    @Test
+    void createWithRequestId() {
+        Item newItem = Item.builder()
+                .id(1L)
+                .name("iiii")
+                .description("ooooooooasdasfa")
+                .available(true)
+                .build();
+        ItemRequest itemRequest = ItemRequest.builder()
+                .id(1L)
+                .user(user)
+                .created(LocalDateTime.now())
+                .description("1111")
+                .build();
+        ItemDtoWithRequest itemDtoWithRequest
+                = new ItemDtoWithRequest(1L, "iiii", "ooooooooasdasfa", true, 1L);
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        newItem.setUser(user);
+        Mockito
+                .when(itemRequestRepository.findById(anyLong()))
+                .thenReturn(Optional.of(itemRequest));
+        newItem.setRequestId(itemRequest);
+        Mockito
+                .when(itemRepository.save(any(Item.class)))
+                .thenReturn(newItem);
+        ItemDto newItemDto = itemService.addItem(itemDtoWithRequest, 1L);
+        assertEquals(item.getId(), newItemDto.getId());
+        assertEquals(item.getName(), newItemDto.getName());
+        assertEquals(item.getDescription(), newItemDto.getDescription());
+        assertEquals(item.getAvailable(), newItemDto.isAvailable());
+        assertEquals(newItem.getRequestId().getId(), newItemDto.getRequestId());
+    }
+
+    @Test
+    void noCreateWithRequestId() {
+        Item newItem = Item.builder()
+                .id(1L)
+                .name("iiii")
+                .description("ooooooooasdasfa")
+                .available(true)
+                .build();
+        ItemRequest itemRequest = ItemRequest.builder()
+                .id(1L)
+                .user(user)
+                .created(LocalDateTime.now())
+                .description("1111")
+                .build();
+        ItemDtoWithRequest itemDtoWithRequest
+                = new ItemDtoWithRequest(1L, "iiii", "ooooooooasdasfa", true, 1L);
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        newItem.setUser(user);
+        Mockito
+                .when(itemRequestRepository.findById(anyLong()))
+                .thenThrow(new NoObjectExist());
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemService.addItem(itemDtoWithRequest, 1L)
+        );
+    }
+
+    @Test
+    void noUpdateItemUserNotFound() {
+        Item newItem = Item.builder()
+                .id(1L)
+                .name("lllll")
+                .description("asdasdfsa")
+                .available(false)
+                .build();
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        final ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> itemService.updateItem(10, newItem, 1L)
+        );
+    }
+
+    @Test
+    void noUpdateItemUserNoThisUser() {
+        Item newItem = Item.builder()
+                .id(1L)
+                .name("lllll")
+                .description("asdasdfsa")
+                .available(false)
+                .build();
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+        final NoObjectExist exception = assertThrows(
+                NoObjectExist.class,
+                () -> itemService.updateItem(1, newItem, 100)
+        );
+    }
+
+    @Test
+    void getCurrentItemsWithPagination() {
+        String text = "iiii";
+        List<ItemDto> itemDtos = List.of(ItemMapper.toItemDto(item));
+        Mockito
+                .when(itemRepository.findItemsByText(anyString()))
+                .thenReturn(itemDtos);
+        List<ItemDto> resultList = itemService.getCurrentItems(text, 0, 1);
+        assertEquals(itemDtos.get(0).getId(), resultList.get(0).getId());
+        assertEquals(itemDtos.get(0).getName(), resultList.get(0).getName());
+        assertEquals(itemDtos.get(0).getDescription(), resultList.get(0).getDescription());
+        assertEquals(itemDtos.get(0).isAvailable(), resultList.get(0).isAvailable());
+    }
+
+    @Test
+    void getItemsWithPagination() {
+        ItemDtoWithDate itemDtoWithDate1 = ItemDtoWithDate.builder()
+                .id(1L)
+                .name("iiii")
+                .description("ooooooooasdasfa")
+                .available(true)
+                .lastBooking(null)
+                .nextBooking(null)
+                .comments(null)
+                .requestId(null)
+                .build();
+        List<ItemDtoWithDate> itemDtos = List.of(itemDtoWithDate1);
+        List<Item> items = List.of(item);
+        Mockito
+                .when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+        Mockito.when(itemRepository.findAllByUser(user))
+                .thenReturn(items);
+        List<ItemDtoWithDate> resultList = itemService.getItems(1L, 0, 1);
+        assertEquals(itemDtos.get(0).getId(), resultList.get(0).getId());
+        assertEquals(itemDtos.get(0).getName(), resultList.get(0).getName());
+        assertEquals(itemDtos.get(0).getDescription(), resultList.get(0).getDescription());
+        assertEquals(itemDtos.get(0).isAvailable(), resultList.get(0).isAvailable());
+
+    }
+
+    @Test
+    void getItemNotUserOwner() {
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+        ItemDtoWithDate itemDtoWithDate = itemService.getItem(1L, 2L);
+        assertEquals(item.getId(), itemDtoWithDate.getId());
+        assertEquals(item.getName(), itemDtoWithDate.getName());
+        assertEquals(item.getDescription(), itemDtoWithDate.getDescription());
+        assertEquals(item.getAvailable(), itemDtoWithDate.isAvailable());
+        assertNull(itemDtoWithDate.getNextBooking());
+        assertNull(itemDtoWithDate.getLastBooking());
+    }
+
+    @Test
+    void getItemOwnerBooking() {
+        Booking lastBooking = Booking.builder()
+                .id(1L)
+                .item(item)
+                .booker(user)
+                .statusBooking(StatusBooking.APPROVED)
+                .start(LocalDateTime.now().minusDays(3L))
+                .end(LocalDateTime.now().minusDays(1L))
+                .build();
+        Booking nextBooking = Booking.builder()
+                .id(1L)
+                .item(item)
+                .booker(user)
+                .statusBooking(StatusBooking.APPROVED)
+                .start(LocalDateTime.now().plusDays(2L))
+                .end(LocalDateTime.now().plusDays(3L))
+                .build();
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+        Mockito
+                .when(bookingRepository.findByItemIdAndStatusBookingIs(anyLong(), any(StatusBooking.class)))
+                .thenReturn(List.of(lastBooking, nextBooking));
+        ItemDtoWithDate itemDtoWithDate = itemService.getItem(1L, 1L);
+        assertEquals(item.getId(), itemDtoWithDate.getId());
+        assertEquals(item.getName(), itemDtoWithDate.getName());
+        assertEquals(item.getDescription(), itemDtoWithDate.getDescription());
+        assertEquals(item.getAvailable(), itemDtoWithDate.isAvailable());
+        assertEquals(nextBooking.getId(), itemDtoWithDate.getNextBooking().getId());
+        assertEquals(nextBooking.getBooker().getId(), itemDtoWithDate.getNextBooking().getBookerId());
+        assertEquals(lastBooking.getId(), itemDtoWithDate.getLastBooking().getId());
+        assertEquals(lastBooking.getBooker().getId(), itemDtoWithDate.getLastBooking().getBookerId());
+    }
 }

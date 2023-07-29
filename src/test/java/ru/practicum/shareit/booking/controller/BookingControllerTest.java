@@ -25,6 +25,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -104,8 +105,11 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.item.name").value(bookingDto.getItem().getName()))
                 .andExpect(jsonPath("$.booker.id").value(bookingDto.getBooker().getId()))
                 .andExpect(jsonPath("$.end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$.end[1]").value(bookingDto.getEnd().getMonthValue()))
                 .andExpect(jsonPath("$.end[2]").value(bookingDto.getEnd().getDayOfMonth()))
-                .andExpect(jsonPath("$.start[0]").value(bookingDto.getStart().getYear()));
+                .andExpect(jsonPath("$.start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$.start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$.start[2]").value(bookingDto.getStart().getDayOfMonth()));
     }
 
     @Test
@@ -124,7 +128,13 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.item.id").value(bookingDto.getItem().getId()))
                 .andExpect(jsonPath("$.status").value(bookingDto.getStatus().toString()))
                 .andExpect(jsonPath("$.item.name").value(bookingDto.getItem().getName()))
-                .andExpect(jsonPath("$.booker.id").value(bookingDto.getBooker().getId()));
+                .andExpect(jsonPath("$.booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$.end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$.end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$.end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$.start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$.start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$.start[2]").value(bookingDto.getStart().getDayOfMonth()));
 
     }
 
@@ -143,7 +153,13 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.item.id").value(bookingDto.getItem().getId()))
                 .andExpect(jsonPath("$.status").value(bookingDto.getStatus().toString()))
                 .andExpect(jsonPath("$.item.name").value(bookingDto.getItem().getName()))
-                .andExpect(jsonPath("$.booker.id").value(bookingDto.getBooker().getId()));
+                .andExpect(jsonPath("$.booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$.end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$.end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$.end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$.start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$.start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$.start[2]").value(bookingDto.getStart().getDayOfMonth()));
     }
 
     @Test
@@ -161,7 +177,13 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
                 .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
                 .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
-                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()));
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
     }
 
     @Test
@@ -179,6 +201,288 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
                 .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
                 .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
-                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()));
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentUserStateCurrent() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2022, 12, 1, 23, 0));
+        Mockito
+                .when(bookingService.getBookingsWithCurrentUser(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings?state=CURRENT&from=1&size=1")
+                        .header("X-Sharer-User-Id", 2L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentOwnerStateCurrent() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2022, 12, 1, 23, 0));
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings/owner?state=CURRENT&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentUserStatePast() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2021, 12, 1, 23, 0));
+        bookingDto.setEnd(LocalDateTime.of(2022, 12, 1, 23, 0));
+        Mockito
+                .when(bookingService.getBookingsWithCurrentUser(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings?state=PAST&from=1&size=1")
+                        .header("X-Sharer-User-Id", 2L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentOwnerStatePast() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2021, 12, 1, 23, 0));
+        bookingDto.setEnd(LocalDateTime.of(2022, 12, 1, 23, 0));
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings/owner?state=PAST&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentUserStateWaiting() throws Exception {
+        Mockito
+                .when(bookingService.getBookingsWithCurrentUser(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings?state=WAITING&from=1&size=1")
+                        .header("X-Sharer-User-Id", 2L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentOwnerStateWaiting() throws Exception {
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings/owner?state=WAITING&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentUserStateRejected() throws Exception {
+        bookingDto.setStatus(StatusBooking.REJECTED);
+        Mockito
+                .when(bookingService.getBookingsWithCurrentUser(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings?state=REJECTED&from=1&size=1")
+                        .header("X-Sharer-User-Id", 2L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentOwnerStateRejected() throws Exception {
+        bookingDto.setStatus(StatusBooking.REJECTED);
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings/owner?state=REJECTED&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentUserStateAll() throws Exception {
+        bookingDto.setStatus(StatusBooking.REJECTED);
+        Mockito
+                .when(bookingService.getBookingsWithCurrentUser(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings?from=1&size=1")
+                        .header("X-Sharer-User-Id", 2L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getBookingByCurrentOwnerStateAll() throws Exception {
+        bookingDto.setStatus(StatusBooking.REJECTED);
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(bookingDto));
+        mvc.perform(get("/bookings/owner?from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(bookingDto.getId()))
+                .andExpect(jsonPath("$[0].item.id").value(bookingDto.getItem().getId()))
+                .andExpect(jsonPath("$[0].status").value(bookingDto.getStatus().toString()))
+                .andExpect(jsonPath("$[0].item.name").value(bookingDto.getItem().getName()))
+                .andExpect(jsonPath("$[0].booker.id").value(bookingDto.getBooker().getId()))
+                .andExpect(jsonPath("$[0].end[0]").value(bookingDto.getEnd().getYear()))
+                .andExpect(jsonPath("$[0].end[1]").value(bookingDto.getEnd().getMonthValue()))
+                .andExpect(jsonPath("$[0].end[2]").value(bookingDto.getEnd().getDayOfMonth()))
+                .andExpect(jsonPath("$[0].start[0]").value(bookingDto.getStart().getYear()))
+                .andExpect(jsonPath("$[0].start[1]").value(bookingDto.getStart().getMonthValue()))
+                .andExpect(jsonPath("$[0].start[2]").value(bookingDto.getStart().getDayOfMonth()));
+    }
+
+    @Test
+    void getOwnerWrongState() throws Exception {
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(new ArrayList<>());
+        mvc.perform(get("/bookings/owner?state=AAAA&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    void getWrongState() throws Exception {
+        Mockito
+                .when(bookingService.getBookingWithCurrentOwner(anyString(), anyLong(), anyInt(), anyInt()))
+                .thenReturn(new ArrayList<>());
+        mvc.perform(get("/bookings/?state=AAAA&from=1&size=1")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is5xxServerError());
     }
 }

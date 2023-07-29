@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDate;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -49,23 +48,6 @@ public class ItemMapper {
                 .lastBooking(bookingLast != null ? BookingMapper.toBookingItem(bookingLast) : null)
                 .comments(comments)
                 .requestId(item.getRequestId() != null ? item.getRequestId().getId() : null)
-                .build();
-    }
-
-    /**
-     * Метод преобразования из объекта DTO в объект item
-     *
-     * @param itemDto - объект DTO
-     * @param user    - юзер
-     * @return - объект item
-     */
-    public Item toNewItem(ItemDto itemDto, User user) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.isAvailable())
-                .user(user)
                 .build();
     }
 

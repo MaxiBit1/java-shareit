@@ -19,6 +19,7 @@ import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -177,4 +178,92 @@ class ItemRequestServiceTest {
                 () -> itemRequestService.getRequest(1000, 1L)
         );
     }
+
+    @Test
+    void notUserFoundItemRequest() {
+        itemRequestDto1 = ItemRequestDto.builder()
+                .id(2L)
+                .description("aaaaa")
+                .created(LocalDateTime.of(2030, 12, 1, 15, 0))
+                .build();
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        Page<ItemRequest> page = new PageImpl<>(List.of(itemRequest));
+        Mockito
+                .when(itemRequestRepository.findAll(any(PageRequest.class)))
+                .thenReturn(page);
+        Mockito
+                .when(itemRequestRepository.findAllByUser(any(User.class), any(Sort.class)))
+                .thenReturn(new ArrayList<>());
+        Mockito
+                .when(itemRequestMapper.toDto(any(ItemRequest.class)))
+                .thenReturn(itemRequestDto1);
+        List<ItemRequestDto> resultList = itemRequestService.getRequestsPageable(2L, 0, 1);
+        assertEquals(itemRequestDto1.getId(), resultList.get(0).getId());
+        assertEquals(itemRequestDto1.getDescription(), resultList.get(0).getDescription());
+        assertEquals(itemRequestDto1.getCreated(), resultList.get(0).getCreated());
+    }
+
+    @Test
+    void getErrorRequestsPageable() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> itemRequestService.getRequest(10000, 1)
+        );
+    }
+
+    @Test
+    void getRequestsPageableNotUser() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> itemRequestService.getRequestsPageable(10000, 1, 1)
+        );
+    }
+
+    @Test
+    void getRequestForAllUsers() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(itemRequestRepository.findById(anyLong()))
+                .thenReturn(Optional.of(itemRequest));
+        Mockito
+                .when(itemRequestRepository.findAllByUser(any(User.class), any(Sort.class)))
+                .thenReturn(new ArrayList<>());
+        Mockito
+                .when(itemRequestMapper.toDto(any(ItemRequest.class)))
+                .thenReturn(itemRequestDto1);
+        ItemRequestDto itemRequestDto =
+                itemRequestService.getRequest(1L, 1L);
+        assertEquals(itemRequest.getId(), itemRequestDto.getId());
+        assertEquals(itemRequest.getDescription(), itemRequestDto.getDescription());
+        assertEquals(itemRequest.getCreated(), itemRequestDto.getCreated());
+    }
+
+    @Test
+    void getRequestsPageableWithSizeNull() {
+        Mockito
+                .when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(itemRequestRepository.findAllByUser(any(User.class), any(Sort.class)))
+                .thenReturn(List.of(itemRequest));
+        Mockito
+                .when(itemRequestMapper.toDto(any(ItemRequest.class)))
+                .thenReturn(itemRequestDto1);
+        List<ItemRequestDto> resultList = itemRequestService.getRequestsPageable(1L, null, null);
+        assertEquals(itemRequest.getId(), resultList.get(0).getId());
+        assertEquals(itemRequest.getDescription(), resultList.get(0).getDescription());
+        assertEquals(itemRequest.getCreated(), resultList.get(0).getCreated());
+    }
+
+
 }

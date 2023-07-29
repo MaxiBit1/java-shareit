@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.NoObjectExist;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserRepository;
@@ -114,6 +115,26 @@ public class UserServiceTest {
         final NoObjectExist exception = assertThrows(
                 NoObjectExist.class,
                 () -> userService.getUser(100)
+        );
+    }
+
+    @Test
+    void getDublicateErrorEmail() {
+        User user = User.builder()
+                .id(1L)
+                .name("aaa")
+                .email("o@mail.com")
+                .build();
+        Mockito
+                .when(mockUserRepository.findById(anyLong()))
+                .thenReturn(Optional.of(newUser));
+        Mockito
+                .when(mockUserRepository.findAll())
+                .thenReturn(List.of(newUser, user));
+
+        final EmailExist exception = assertThrows(
+                EmailExist.class,
+                () -> userService.updateUser(1L, user)
         );
     }
 

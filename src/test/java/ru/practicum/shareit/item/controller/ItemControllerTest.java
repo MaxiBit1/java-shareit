@@ -226,6 +226,8 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.id").value(commentDto.getId()))
                 .andExpect(jsonPath("$.text").value(commentDto.getText()))
                 .andExpect(jsonPath("$.authorName").value(commentDto.getAuthorName()))
-                .andExpect(jsonPath("$.created[0]").value(commentDto.getCreated().getYear()));
+                .andExpect(jsonPath("$.created[0]").value(commentDto.getCreated().getYear()))
+                .andExpect(jsonPath("$.created[1]").value(commentDto.getCreated().getMonthValue()))
+                .andExpect(jsonPath("$.created[2]").value(commentDto.getCreated().getDayOfMonth()));
     }
 }

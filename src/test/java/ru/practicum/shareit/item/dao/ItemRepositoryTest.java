@@ -78,10 +78,14 @@ class ItemRepositoryTest {
         assertEquals(item.getName(), resultList.get(0).getName());
         assertEquals(item.getDescription(), resultList.get(0).getDescription());
         assertEquals(item.getAvailable(), resultList.get(0).getAvailable());
+        assertEquals(item.getRequestId().getId(), resultList.get(0).getRequestId().getId());
+        assertEquals(item.getRequestId().getDescription(), resultList.get(0).getRequestId().getDescription());
+        assertEquals(item.getRequestId().getCreated(), resultList.get(0).getRequestId().getCreated());
         assertEquals(item1.getId(), resultList.get(1).getId());
         assertEquals(item1.getName(), resultList.get(1).getName());
         assertEquals(item1.getDescription(), resultList.get(1).getDescription());
         assertEquals(item1.getAvailable(), resultList.get(1).getAvailable());
+        assertEquals(item1.getRequestId(), resultList.get(1).getRequestId());
     }
 
     @Test
@@ -105,5 +109,8 @@ class ItemRepositoryTest {
         assertEquals(item.getName(), resultList.get(0).getName());
         assertEquals(item.getDescription(), resultList.get(0).getDescription());
         assertEquals(item.getAvailable(), resultList.get(0).getAvailable());
+        assertEquals(item.getRequestId().getId(), resultList.get(0).getRequestId().getId());
+        assertEquals(item.getRequestId().getDescription(), resultList.get(0).getRequestId().getDescription());
+        assertEquals(item.getRequestId().getCreated(), resultList.get(0).getRequestId().getCreated());
     }
 }
