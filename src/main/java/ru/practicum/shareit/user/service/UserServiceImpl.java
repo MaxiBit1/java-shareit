@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.NoObjectExist;
@@ -32,14 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(User user) {
         log.info("User was created");
-        try {
-            return UserMapper.getUserDto(userRepository.save(user));
-        } catch (DataIntegrityViolationException exception) {
-            if (exception.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException")) {
-                throw new EmailExist();
-            }
-            throw exception;
-        }
+        return UserMapper.getUserDto(userRepository.save(user));
     }
 
 
