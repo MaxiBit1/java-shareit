@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         try {
             return UserMapper.getUserDto(userRepository.save(user));
         } catch (DataIntegrityViolationException exception) {
-            if(exception.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException")) {
+            if (exception.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException")) {
                 throw new EmailExist();
             }
             throw exception;
