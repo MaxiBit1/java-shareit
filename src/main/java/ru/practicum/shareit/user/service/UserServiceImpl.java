@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +32,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(User user) {
         log.info("User was created");
-        return UserMapper.getUserDto(userRepository.save(user));
+        try {
+            return UserMapper.getUserDto(userRepository.save(user));
+        } catch (ConstraintViolationException exception) {
+            throw new EmailExist();
+        }
     }
 
 
