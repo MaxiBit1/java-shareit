@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.model.EmailExist;
 import ru.practicum.shareit.exceptions.model.NoObjectExist;
@@ -10,7 +11,6 @@ import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,8 +34,11 @@ public class UserServiceImpl implements UserService {
         log.info("User was created");
         try {
             return UserMapper.getUserDto(userRepository.save(user));
-        } catch (ConstraintViolationException exception) {
-            throw new EmailExist();
+        } catch (DataIntegrityViolationException exception) {
+            if(exception.getMostSpecificCause().getClass().getName().equals("org.postgresql.util.PSQLException")) {
+                throw new EmailExist();
+            }
+            throw exception;
         }
     }
 
