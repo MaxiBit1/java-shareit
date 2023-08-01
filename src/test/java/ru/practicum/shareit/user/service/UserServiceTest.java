@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exceptions.model.EmailExist;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -110,10 +110,10 @@ public class UserServiceTest {
     void getNotUser() {
         Mockito
                 .when(mockUserRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
+                .thenThrow(new NoUserException());
 
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoUserException exception = assertThrows(
+                NoUserException.class,
                 () -> userService.getUser(100)
         );
     }

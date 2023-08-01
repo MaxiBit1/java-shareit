@@ -12,7 +12,7 @@ import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingTakedDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoBookingException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -344,10 +344,10 @@ class BookingServiceTest {
     void getNoBooking() {
         Mockito
                 .when(bookingRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
+                .thenThrow(new NoBookingException());
 
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoBookingException exception = assertThrows(
+                NoBookingException.class,
                 () -> bookingService.getBooking(1000, 1)
         );
     }

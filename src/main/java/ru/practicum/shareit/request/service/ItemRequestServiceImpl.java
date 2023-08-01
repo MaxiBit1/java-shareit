@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoItemRequestException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.dao.ItemRequestRepository;
@@ -31,12 +32,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDto save(ItemRequest itemRequest, long idUser, LocalDateTime created) {
         Optional<User> user = userRepository.findById(idUser);
-        if (user.isEmpty()) {
-            throw new RuntimeException();
-        }
         return itemRequestMapper.toDto(itemRequestRepository.save(ItemRequest.builder()
                 .description(itemRequest.getDescription())
-                .user(user.get())
+                .user(user.orElseThrow(NoUserException::new))
                 .created(created)
                 .build()));
     }
@@ -44,28 +42,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getRequests(long idUser) {
         Optional<User> user = userRepository.findById(idUser);
-        if (user.isEmpty()) {
-            throw new RuntimeException();
-        }
-        return checkList(user.get());
+        return checkList(user.orElseThrow(NoUserException::new));
     }
 
 
     @Override
     public ItemRequestDto getRequest(long idUser, long idRequest) {
         Optional<User> user = userRepository.findById(idUser);
-        if (user.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        Optional<ItemRequest> request = itemRequestRepository.findById(idRequest);
-        if (request.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        if (checkList(user.get()).isEmpty()) {
-            return itemRequestMapper.toDto(request.get());
+        ItemRequest request = itemRequestRepository.findById(idRequest).orElseThrow(NoItemRequestException::new);
+        if (checkList(user.orElseThrow(NoUserException::new)).isEmpty()) {
+            return itemRequestMapper.toDto(request);
         }
         return itemRequestMapper.toDto(itemRequestRepository
-                .findByIdAndUser(idRequest, user.get()));
+                .findByIdAndUser(idRequest, user.orElseThrow(NoUserException::new)));
     }
 
     @Override

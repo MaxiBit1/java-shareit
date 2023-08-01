@@ -76,6 +76,7 @@ class BookingRepositoryTest {
     void findByBookerIdAndEndIsBefore() {
         booking.setStart(LocalDateTime.now().minusDays(2L));
         booking.setEnd(LocalDateTime.now().minusDays(1L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByBookerIdAndEndIsBefore(userBooker.getId(),
                 LocalDateTime.now(),
                 Sort.by(Sort.Direction.DESC, "start"));
@@ -104,6 +105,7 @@ class BookingRepositoryTest {
     void findByBookerIdAndStartIsAfter() {
         booking.setStart(LocalDateTime.now().plusDays(2L));
         booking.setEnd(LocalDateTime.now().plusDays(3L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByBookerIdAndStartIsAfter(userBooker.getId(),
                 LocalDateTime.now(),
                 Sort.by(Sort.Direction.DESC, "start"));
@@ -119,6 +121,7 @@ class BookingRepositoryTest {
     void findByBookerIdAndEndIsAfterAndStartIsBefore() {
         booking.setStart(LocalDateTime.now().minusDays(2L));
         booking.setEnd(LocalDateTime.now().plusDays(3L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(userBooker.getId(),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
@@ -147,6 +150,7 @@ class BookingRepositoryTest {
     void findByItemUserIdAndEndIsBefore() {
         booking.setStart(LocalDateTime.now().minusDays(2L));
         booking.setEnd(LocalDateTime.now().minusDays(1L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByItemUserIdAndEndIsBefore(userOwner.getId(),
                 LocalDateTime.now(),
                 Sort.by(Sort.Direction.DESC, "start"));
@@ -175,6 +179,7 @@ class BookingRepositoryTest {
     void findByItemUserIdAndStartIsAfter() {
         booking.setStart(LocalDateTime.now().plusDays(2L));
         booking.setEnd(LocalDateTime.now().plusDays(3L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByItemUserIdAndStartIsAfter(userOwner.getId(),
                 LocalDateTime.now(),
                 Sort.by(Sort.Direction.DESC, "start"));
@@ -190,6 +195,7 @@ class BookingRepositoryTest {
     void findByItemUserIdAndEndIsAfterAndStartIsBefore() {
         booking.setStart(LocalDateTime.now().minusDays(2L));
         booking.setEnd(LocalDateTime.now().plusDays(3L));
+        bookingRepository.save(booking);
         List<Booking> resultList = bookingRepository.findByItemUserIdAndEndIsAfterAndStartIsBefore(userOwner.getId(),
                 LocalDateTime.now(),
                 LocalDateTime.now(),

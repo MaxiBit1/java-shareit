@@ -12,7 +12,9 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingTakedDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoBookingException;
+import ru.practicum.shareit.exceptions.model.NoItemException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -36,18 +38,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto createBooking(BookingTakedDto booking, long userId) {
         Optional<Item> itemOptional = itemRepository.findById(booking.getItemId());
-        if (itemOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        if (!itemOptional.get().getAvailable()) {
+        if (!itemOptional.orElseThrow(NoItemException::new).getAvailable()) {
             throw new ValidationException();
         }
         Item item = itemOptional.get();
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        User user = userOptional.get();
+        User user = userOptional.orElseThrow(NoUserException::new);
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
         if (start.isAfter(end)
@@ -56,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException();
         }
         if (userId == item.getId()) {
-            throw new NoObjectExist();
+            throw new NoUserException();
         }
         return BookingMapper.toDto(bookingRepository.save(Booking.builder()
                 .booker(user)
@@ -70,12 +66,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto updateBooking(long bookingId, boolean approved, long userId) {
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
-        if (bookingOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        Booking booking = bookingOptional.get();
+        Booking booking = bookingOptional.orElseThrow(NoBookingException::new);
         if (booking.getItem().getUser().getId() != userId) {
-            throw new NoObjectExist();
+            throw new NoUserException();
         }
         if (booking.getStatusBooking() == StatusBooking.APPROVED) {
             throw new ValidationException();
@@ -91,12 +84,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBooking(long bookingId, long userId) {
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
-        if (bookingOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        Booking booking = bookingOptional.get();
+        Booking booking = bookingOptional.orElseThrow(NoBookingException::new);
         if ((booking.getItem().getUser().getId() != userId) == (booking.getBooker().getId() != userId)) {
-            throw new NoObjectExist();
+            throw new NoUserException();
         }
         return BookingMapper.toDto(booking);
     }

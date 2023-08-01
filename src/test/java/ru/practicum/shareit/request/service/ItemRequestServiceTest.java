@@ -10,7 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoItemRequestException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.dao.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -158,10 +159,10 @@ class ItemRequestServiceTest {
                 .thenReturn(Optional.of(user));
         Mockito
                 .when(itemRequestRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
+                .thenThrow(new NoItemRequestException());
 
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoItemRequestException exception = assertThrows(
+                NoItemRequestException.class,
                 () -> itemRequestService.getRequest(1L, 1000)
         );
     }
@@ -170,11 +171,11 @@ class ItemRequestServiceTest {
     void getNotRequestUser() {
         Mockito
                 .when(userRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
+                .thenThrow(new NoUserException());
 
 
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoUserException exception = assertThrows(
+                NoUserException.class,
                 () -> itemRequestService.getRequest(1000, 1L)
         );
     }

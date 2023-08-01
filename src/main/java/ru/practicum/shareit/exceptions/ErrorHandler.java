@@ -7,10 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exceptions.model.EmailExist;
-import ru.practicum.shareit.exceptions.model.ErrorResponse;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
-import ru.practicum.shareit.exceptions.model.ValidationException;
+import ru.practicum.shareit.exceptions.model.*;
 
 import java.util.Map;
 
@@ -30,9 +27,9 @@ public class ErrorHandler {
         return new ErrorResponse("Validation exception");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({NoUserException.class, NoBookingException.class, NoItemException.class, NoItemRequestException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse notObjectFoundException(final NoObjectExist e) {
+    public ErrorResponse notObjectFoundException(final RuntimeException e) {
         return new ErrorResponse("No object found");
     }
 

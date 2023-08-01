@@ -4,14 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.model.EmailExist;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -68,11 +67,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUser(long userId) {
         log.info("User was found");
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            return UserMapper.getUserDto(user.get());
-        }
-        throw new NoObjectExist();
+        return UserMapper.getUserDto(userRepository.findById(userId)
+                .orElseThrow(NoUserException::new));
     }
 
     /**

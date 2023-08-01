@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoItemException;
+import ru.practicum.shareit.exceptions.model.NoItemRequestException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.CommentMapper;
 import ru.practicum.shareit.item.ItemMapper;
@@ -52,25 +54,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(ItemDtoWithRequest itemDtoWithRequest, long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoObjectExist();
+        ItemRequest itemRequest = null;
+        if (itemDtoWithRequest.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDtoWithRequest.getRequestId())
+                    .orElseThrow(NoItemRequestException::new);
         }
         Item item = Item.builder()
                 .id(itemDtoWithRequest.getId())
                 .name(itemDtoWithRequest.getName())
                 .description(itemDtoWithRequest.getDescription())
                 .available(itemDtoWithRequest.getAvailable())
+                .user(userOptional.orElseThrow(NoUserException::new))
+                .requestId(itemRequest)
                 .build();
-        item.setUser(userOptional.get());
-        if (itemDtoWithRequest.getRequestId() != null) {
-            Optional<ItemRequest> itemRequestOptional = itemRequestRepository.findById(itemDtoWithRequest.getRequestId());
-            if (itemRequestOptional.isEmpty()) {
-                throw new NoObjectExist();
-            }
-            item.setRequestId(itemRequestOptional.get());
-        } else {
-            item.setRequestId(null);
-        }
         log.info("Item was created");
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
@@ -84,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item oldItem = itemOptional.get();
         if (oldItem.getUser().getId() != userId) {
-            throw new NoObjectExist();
+            throw new NoUserException();
         }
         if (item.getName() != null) {
             oldItem.setName(item.getName());
@@ -103,10 +99,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDtoWithDate getItem(long itemId, long userId) {
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        Item item = itemOptional.get();
+        Item item = itemOptional.orElseThrow(NoItemException::new);
         if (userId == item.getUser().getId()) {
             return getItemWithBooking(item);
         }
@@ -120,10 +113,7 @@ public class ItemServiceImpl implements ItemService {
         }
         List<ItemDtoWithDate> resultList = new ArrayList<>();
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        User user = userOptional.get();
+        User user = userOptional.orElseThrow(NoUserException::new);
         List<Item> itemsByUser = itemRepository.findAllByUser(user);
         List<Item> items;
         if (size == 0) {
@@ -175,25 +165,16 @@ public class ItemServiceImpl implements ItemService {
         }
         comment.setCreated(LocalDateTime.now());
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        comment.setItem(itemOptional.get());
-        comment.setUser(userOptional.get());
+        comment.setItem(itemOptional.orElseThrow(NoItemException::new));
+        comment.setUser(userOptional.orElseThrow(NoUserException::new));
         return CommentMapper.toDto(commentRepository.save(comment));
     }
 
     @Override
     public List<ItemDto> getItemsByRequestId(long requestId) {
         Optional<ItemRequest> itemRequestOptional = itemRequestRepository.findById(requestId);
-        if (itemRequestOptional.isEmpty()) {
-            throw new NoObjectExist();
-        }
-        return itemRepository.findAllByRequestId(itemRequestOptional.get()).stream()
+        return itemRepository.findAllByRequestId(itemRequestOptional.orElseThrow(NoItemRequestException::new)).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

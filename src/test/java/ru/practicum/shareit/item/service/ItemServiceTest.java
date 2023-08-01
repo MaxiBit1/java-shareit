@@ -9,7 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.model.NoObjectExist;
+import ru.practicum.shareit.exceptions.model.NoItemException;
+import ru.practicum.shareit.exceptions.model.NoItemRequestException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dao.CommentRepository;
@@ -246,10 +248,10 @@ class ItemServiceTest {
     void getNotItem() {
         Mockito
                 .when(itemRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
+                .thenThrow(new NoItemException());
 
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoItemException exception = assertThrows(
+                NoItemException.class,
                 () -> itemService.getItem(100, 1)
         );
     }
@@ -285,9 +287,9 @@ class ItemServiceTest {
                 .thenReturn(Optional.of(user));
         Mockito
                 .when(itemRequestRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+                .thenThrow(new NoItemRequestException());
+        final NoItemRequestException exception = assertThrows(
+                NoItemRequestException.class,
                 () -> itemService.addItem(itemDtoWithRequest, 1)
         );
     }
@@ -349,9 +351,9 @@ class ItemServiceTest {
         newItem.setUser(user);
         Mockito
                 .when(itemRequestRepository.findById(anyLong()))
-                .thenThrow(new NoObjectExist());
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+                .thenThrow(new NoItemRequestException());
+        final NoItemRequestException exception = assertThrows(
+                NoItemRequestException.class,
                 () -> itemService.addItem(itemDtoWithRequest, 1L)
         );
     }
@@ -384,8 +386,8 @@ class ItemServiceTest {
         Mockito
                 .when(itemRepository.findById(anyLong()))
                 .thenReturn(Optional.of(item));
-        final NoObjectExist exception = assertThrows(
-                NoObjectExist.class,
+        final NoUserException exception = assertThrows(
+                NoUserException.class,
                 () -> itemService.updateItem(1, newItem, 100)
         );
     }
