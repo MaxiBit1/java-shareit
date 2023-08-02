@@ -1,13 +1,14 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 /**
  * Класс создающий объетка DTO
  */
-@Component
+//@Component
+@UtilityClass
 public class UserMapper {
 
     /**
@@ -22,19 +23,5 @@ public class UserMapper {
                 user.getName(),
                 user.getEmail()
         );
-    }
-
-    /**
-     * Метод преобразующий из объекта DTO в объект User
-     *
-     * @param userDto - DTO юзера
-     * @return - объект User
-     */
-    public User toNewUser(UserDto userDto) {
-        return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
-                .build();
     }
 }

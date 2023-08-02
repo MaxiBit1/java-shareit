@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoToItem;
 import ru.practicum.shareit.booking.model.Booking;
@@ -7,6 +8,7 @@ import ru.practicum.shareit.booking.model.Booking;
 /**
  * Класс-маппер для брони
  */
+@UtilityClass
 public class BookingMapper {
 
     public static BookingDto toDto(Booking booking) {

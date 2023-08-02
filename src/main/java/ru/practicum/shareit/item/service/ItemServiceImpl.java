@@ -2,12 +2,17 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.StatusBooking;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.exceptions.model.NoUserExist;
+import ru.practicum.shareit.exceptions.model.NoItemException;
+import ru.practicum.shareit.exceptions.model.NoItemRequestException;
+import ru.practicum.shareit.exceptions.model.NoUserException;
 import ru.practicum.shareit.exceptions.model.ValidationException;
 import ru.practicum.shareit.item.CommentMapper;
 import ru.practicum.shareit.item.ItemMapper;
@@ -16,8 +21,11 @@ import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDate;
+import ru.practicum.shareit.item.dto.ItemDtoWithRequest;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -40,15 +48,25 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
 
     @Override
-    public ItemDto addItem(Item item, long userId) {
+    public ItemDto addItem(ItemDtoWithRequest itemDtoWithRequest, long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoUserExist();
+        ItemRequest itemRequest = null;
+        if (itemDtoWithRequest.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDtoWithRequest.getRequestId())
+                    .orElseThrow(NoItemRequestException::new);
         }
-        item.setUser(userOptional.get());
+        Item item = Item.builder()
+                .id(itemDtoWithRequest.getId())
+                .name(itemDtoWithRequest.getName())
+                .description(itemDtoWithRequest.getDescription())
+                .available(itemDtoWithRequest.getAvailable())
+                .user(userOptional.orElseThrow(NoUserException::new))
+                .requestId(itemRequest)
+                .build();
         log.info("Item was created");
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
@@ -62,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item oldItem = itemOptional.get();
         if (oldItem.getUser().getId() != userId) {
-            throw new NoUserExist();
+            throw new NoUserException();
         }
         if (item.getName() != null) {
             oldItem.setName(item.getName());
@@ -81,10 +99,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDtoWithDate getItem(long itemId, long userId) {
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
-            throw new NoUserExist();
-        }
-        Item item = itemOptional.get();
+        Item item = itemOptional.orElseThrow(NoItemException::new);
         if (userId == item.getUser().getId()) {
             return getItemWithBooking(item);
         }
@@ -92,28 +107,50 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithDate> getItems(long userId) {
+    public List<ItemDtoWithDate> getItems(long userId, long from, long size) {
+        if (from < 0 || size < 0) {
+            throw new ValidationException();
+        }
         List<ItemDtoWithDate> resultList = new ArrayList<>();
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoUserExist();
+        User user = userOptional.orElseThrow(NoUserException::new);
+        List<Item> itemsByUser = itemRepository.findAllByUser(user);
+        List<Item> items;
+        if (size == 0) {
+            items = itemRepository.findAllByUser(user);
+        } else {
+            Pageable pageable = PageRequest.of((int) from, (int) size);
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), itemsByUser.size());
+            items = new PageImpl<>(itemsByUser.subList(start, end), pageable, itemsByUser.size()).getContent();
         }
-        User user = userOptional.get();
-        List<Item> items = itemRepository.findAllByUser(user);
         for (Item item : items) {
             resultList.add(getItemWithBooking(item));
         }
-        return resultList.stream()
+        return resultList
+                .stream()
                 .sorted(Comparator.comparing(ItemDtoWithDate::getId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> getCurrentItems(String text) {
+    public List<ItemDto> getCurrentItems(String text, long from, long size) {
+        if (from < 0 || size < 0) {
+            throw new ValidationException();
+        }
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        return itemRepository.findItemsByText(text.toLowerCase());
+        List<ItemDto> itemDtos = itemRepository.findItemsByText(text.toLowerCase());
+        if (size == 0) {
+            return itemDtos;
+        } else {
+            Pageable pageable = PageRequest.of((int) from, (int) size);
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), itemDtos.size());
+            return new PageImpl<>(itemDtos.subList(start, end), pageable, itemDtos.size()).getContent();
+        }
+
     }
 
     @Override
@@ -128,16 +165,18 @@ public class ItemServiceImpl implements ItemService {
         }
         comment.setCreated(LocalDateTime.now());
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NoUserExist();
-        }
         Optional<Item> itemOptional = itemRepository.findById(itemId);
-        if (itemOptional.isEmpty()) {
-            throw new NoUserExist();
-        }
-        comment.setItem(itemOptional.get());
-        comment.setUser(userOptional.get());
+        comment.setItem(itemOptional.orElseThrow(NoItemException::new));
+        comment.setUser(userOptional.orElseThrow(NoUserException::new));
         return CommentMapper.toDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public List<ItemDto> getItemsByRequestId(long requestId) {
+        Optional<ItemRequest> itemRequestOptional = itemRequestRepository.findById(requestId);
+        return itemRepository.findAllByRequestId(itemRequestOptional.orElseThrow(NoItemRequestException::new)).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     private ItemDtoWithDate getItemWithBooking(Item item) {
@@ -167,4 +206,5 @@ public class ItemServiceImpl implements ItemService {
                 .map(CommentMapper::toDto)
                 .collect(Collectors.toList());
     }
+
 }

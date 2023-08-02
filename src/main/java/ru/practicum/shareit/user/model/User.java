@@ -19,7 +19,7 @@ import javax.validation.constraints.NotEmpty;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @NotEmpty(message = "Имя не может быть пустым")
     @Column(name = "name")
     private String name;

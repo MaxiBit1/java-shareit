@@ -1,20 +1,20 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDate;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 /**
  * Класс создания объекта DTO
  */
-@Component
+//@Component
+@UtilityClass
 public class ItemMapper {
 
     /**
@@ -27,7 +27,8 @@ public class ItemMapper {
         return new ItemDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable()
+                item.getAvailable(),
+                item.getRequestId() != null ? item.getRequestId().getId() : null
         );
     }
 
@@ -46,23 +47,7 @@ public class ItemMapper {
                 .nextBooking(bookingNext != null ? BookingMapper.toBookingItem(bookingNext) : null)
                 .lastBooking(bookingLast != null ? BookingMapper.toBookingItem(bookingLast) : null)
                 .comments(comments)
-                .build();
-    }
-
-    /**
-     * Метод преобразования из объекта DTO в объект item
-     *
-     * @param itemDto - объект DTO
-     * @param user    - юзер
-     * @return - объект item
-     */
-    public Item toNewItem(ItemDto itemDto, User user) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.isAvailable())
-                .user(user)
+                .requestId(item.getRequestId() != null ? item.getRequestId().getId() : null)
                 .build();
     }
 
