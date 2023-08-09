@@ -39,7 +39,7 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItemRequestAll(Long userId, Integer from, Integer size) {
-        if(from == null && size == null) {
+        if (from == null && size == null) {
             return get("/all", userId);
         }
         Map<String, Object> parameters = Map.of(

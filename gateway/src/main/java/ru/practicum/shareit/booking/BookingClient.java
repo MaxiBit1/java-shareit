@@ -44,7 +44,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookings(BookingState state, long userId, Integer from, Integer size) {
-        if(from == null && size == null) {
+        if (from == null && size == null) {
             Map<String, Object> parameters = Map.of(
                     "state", state.name()
             );
@@ -59,7 +59,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookingsOwner(BookingState state, long userId, Integer from, Integer size) {
-        if(from == null && size == null) {
+        if (from == null && size == null) {
             Map<String, Object> parameters = Map.of(
                     "state", state.name()
             );
