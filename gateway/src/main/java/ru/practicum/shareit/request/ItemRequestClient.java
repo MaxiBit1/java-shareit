@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
@@ -35,7 +36,11 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItemRequest(Long userId, Long requestId) {
-        return get("/" + requestId, userId);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .path("/{requestId}")
+                .buildAndExpand(requestId)
+                .toUriString(), userId);
     }
 
     public ResponseEntity<Object> getItemRequestAll(Long userId, Integer from, Integer size) {
@@ -46,7 +51,13 @@ public class ItemRequestClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        return get("/all?from={from}&size={size}", userId, parameters);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .path("/all")
+                .query("from={from}")
+                .query("size={size}")
+                .build()
+                .toUriString(), userId, parameters);
     }
 }
 

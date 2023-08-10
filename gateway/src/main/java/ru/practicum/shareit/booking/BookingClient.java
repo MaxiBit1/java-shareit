@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.dto.BookingTackedDto;
 import ru.practicum.shareit.client.BaseClient;
@@ -36,7 +37,12 @@ public class BookingClient extends BaseClient {
         Map<String, Object> parameters = Map.of(
                 "approved", approved
         );
-        return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
+        return patch(UriComponentsBuilder
+                .newInstance()
+                .path("/{bookingId}")
+                .query("approved={approved}")
+                .buildAndExpand(bookingId, approved)
+                .toUriString(), userId, null);
     }
 
     public ResponseEntity<Object> getBooking(long bookingId, long userId) {
@@ -48,14 +54,24 @@ public class BookingClient extends BaseClient {
             Map<String, Object> parameters = Map.of(
                     "state", state.name()
             );
-            return get("?state={state}", userId, parameters);
+            return get(UriComponentsBuilder
+                    .newInstance()
+                    .query("state={state}")
+                    .build()
+                    .toUriString(), userId, parameters);
         }
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
                 "size", size
         );
-        return get("?state={state}&from={from}&size={size}", userId, parameters);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .query("state={state}")
+                .query("from={from}")
+                .query("size={size}")
+                .build()
+                .toUriString(), userId, parameters);
     }
 
     public ResponseEntity<Object> getBookingsOwner(BookingState state, long userId, Integer from, Integer size) {
@@ -63,13 +79,25 @@ public class BookingClient extends BaseClient {
             Map<String, Object> parameters = Map.of(
                     "state", state.name()
             );
-            return get("/owner?state={state}", userId, parameters);
+            return get(UriComponentsBuilder
+                    .newInstance()
+                    .path("/owner")
+                    .query("state={state}")
+                    .build()
+                    .toUriString(), userId, parameters);
         }
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
                 "size", size
         );
-        return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .path("/owner")
+                .query("state={state}")
+                .query("from={from}")
+                .query("size={size}")
+                .build()
+                .toUriString(), userId, parameters);
     }
 }

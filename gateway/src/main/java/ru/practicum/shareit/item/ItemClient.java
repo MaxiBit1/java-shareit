@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -33,11 +34,19 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> upgradeItem(long itemId, ItemDto itemDto, long userId) {
-        return patch("/" + itemId, userId, itemDto);
+        return patch(UriComponentsBuilder
+                .newInstance()
+                .path("/{itemId}")
+                .buildAndExpand(itemId)
+                .toUriString(), userId, itemDto);
     }
 
     public ResponseEntity<Object> getItem(long itemId, long userId) {
-        return get("/" + itemId, userId);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .path("/{itemId}")
+                .buildAndExpand(itemId)
+                .toUriString(), userId);
     }
 
     public ResponseEntity<Object> getItems(long userId, Long from, Long size) {
@@ -45,7 +54,12 @@ public class ItemClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        return get("?from={from}&size={size}", userId, parameters);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .query("from={from}")
+                .query("size={size}")
+                .build()
+                .toUriString(), userId, parameters);
     }
 
     public ResponseEntity<Object> getSearchItems(long userId, String text, Long from, Long size) {
@@ -54,10 +68,22 @@ public class ItemClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        return get("/search?text={text}&from={from}&size={size}", userId, parameters);
+        return get(UriComponentsBuilder
+                .newInstance()
+                .path("/search")
+                .query("text={text}")
+                .query("from={from}")
+                .query("size={size}")
+                .build()
+                .toUriString(), userId, parameters);
     }
 
     public ResponseEntity<Object> createComment(long itemId, long userId, CommentDto commentDto) {
-        return post("/" + itemId + "/comment", userId, commentDto);
+        return post(UriComponentsBuilder
+                .newInstance()
+                .path("/{userId}")
+                .path("/comment")
+                .buildAndExpand(itemId)
+                .toUriString(), userId, commentDto);
     }
 }
